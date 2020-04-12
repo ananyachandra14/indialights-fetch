@@ -11,7 +11,7 @@ state_code              = "19"                      # Unused. uttar-pradesh - 9,
 directory               = folder + state + "/"
 output_file_path_name   = "wb_village_data"
 village_dump_file_path  = "village_dumps_by_state/wb_villages_dump.csv"
-last_village            = "04078200"                # For tracking progress. Change this when changing village_dump_file_path.
+last_village            = "04078200"                # For tracking progress. Change this to the last village number when changing village_dump_file_path.
 
 # Starting and ending months for each village fetch
 start_year              = "2008"
