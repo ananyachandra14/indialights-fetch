@@ -10,7 +10,7 @@ state                   = "west-bengal"             # This is just to create the
 state_code              = "19"                      # Unused. uttar-pradesh - 9, bihar - 10, assam - 18, west-bengal - 19, orissa - 21, andhra-pradesh - 28
 directory               = folder + state + "/"
 output_file_path_name   = "wb_village_data"
-village_dump_file_path  = "village_dumps_by_state/wb_villages_dump.csv"
+village_dump_file_path  = "village_dumps_by_state/assam_villages_dump.csv" # Change this to the village dump file of the corresponding state
 last_village            = "04078200"                # For tracking progress. Change this to the last village number when changing village_dump_file_path.
 
 # Starting and ending months for each village fetch
@@ -24,19 +24,6 @@ download_all_villages   = False                     # If set to True, all villag
 starting_village_number = "00000000"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
 ending_village_number   = "00001000"                # Bulk fetch will stop at this village number, including this.
 append_to_file          = False                     # This will append data to output_file_path_name file if set to True
-
-
-# Util methods
-def get_district_code(d_code):
-    return str(d_code).zfill(2)
-
-
-def get_sub_district_code(sd_code):
-    return str(sd_code).zfill(4)
-
-
-def get_village_code(v_code):
-    return str(v_code).zfill(6) + "00"
 
 
 def write_line_in_file(
