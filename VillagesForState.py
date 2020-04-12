@@ -1,8 +1,29 @@
 import requests
+import os
 from datetime import datetime
 from pathlib import Path
 
-folder = "/Users/ananya.chandra/Documents/"
+folder = os.getcwd() + "/"
+
+# Parameters to be changed
+state                   = "west-bengal"             # This is just to create the folder inside the directory where all village data will be stored
+state_code              = "19"                      # Unused. uttar-pradesh - 9, bihar - 10, assam - 18, west-bengal - 19, orissa - 21, andhra-pradesh - 28
+directory               = folder + state + "/"
+output_file_path_name   = "wb_village_data"
+village_dump_file_path  = "village_dumps_by_state/wb_villages_dump.csv"
+last_village            = "04078200"                # For tracking progress. Change this when changing village_dump_file_path.
+
+# Starting and ending months for each village fetch
+start_year              = "2008"
+start_month             = "1"
+end_year                = "2013"
+end_month               = "12"
+
+download_all_villages   = False                     # If set to True, all villages' data are fetched and added to a new file with current timestamp.
+                                                    # starting_village_number and ending_village_number properties are used only if set to False    .
+starting_village_number = "00000000"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
+ending_village_number   = "00001000"                # Bulk fetch will stop at this village number, including this.
+append_to_file          = False                     # This will append data to output_file_path_name file if set to True
 
 
 # Util methods
@@ -161,31 +182,8 @@ class VillageDataObject:
         self.india_lights_village_code = self.state_code + self.district_code + self.sub_district_code + self.village_code
 
 
+# Processing - Don't touch this
 
-
-
-# MAIN CODE STARTS HERE
-
-# Parameters to be changed
-state                   = "west-bengal" # This is just to create the folder inside the directory where all village data will be stored
-state_code              = "19" # uttar-pradesh - 9, bihar - 10, assam - 18, west-bengal - 19, orissa - 21, andhra-pradesh - 28
-directory               = folder + state + "/"
-output_file_path_name   = "wb_village_data"
-village_dump_file_path  = "village_dumps_by_state/wb_villages_dump.csv"
-last_village            = "04078200" # For tracking progress. Change this when changing village_dump_file_path.
-
-# Starting and ending months for each village
-start_year              = "2008"
-end_year                = "2013"
-start_month             = "1"
-end_month               = "12"
-
-download_all_villages   = False # If set to True, starting_village_number and ending_village_number properties aren't used
-starting_village_number = "00000000"
-ending_village_number   = "00010000" # Including this
-append_to_file = False
-
-### Processing - Don't touch this
 last_village_int = int(last_village[:-2])
 start_village_int = int(starting_village_number[:-2])
 end_village_int = int(ending_village_number[:-2])
@@ -199,6 +197,7 @@ output_file_path = directory + output_file_path_name + (dt_string + ".csv" if no
 
 ###
 
+# MAIN CODE STARTS HERE
 # Downloading begins here
 Path(directory).mkdir(parents=True, exist_ok=True)
 output_file = open(output_file_path, 'a' if append_to_file else 'w')
@@ -230,42 +229,3 @@ output_file.close()
 
 
 print("\n\n############### DOWNLOAD COMPLETE ##############\n\n")
-
-
-
-# Unused because no way to tell how to change sub district
-
-# starting_district = 1
-# ending_district = 1
-# starting_sub_district = 1
-# ending_sub_district = 1
-# starting_village = 1
-# ending_village = 10
-#
-# starting_village_code = state_code + get_district_code(starting_district) + get_sub_district_code(starting_sub_district) + get_village_code(starting_village)
-# ending_villagege_code = state_code + get_district_code(starting_district) + get_sub_district_code(starting_sub_district) + get_village_code(starting_village)
-
-# for district_number in range(starting_district, ending_district + 1):
-#     district_code = get_district_code(starting_district)
-#     for sub_district_number in range(starting_sub_district, ending_sub_district + 1):
-#         sub_district_code = get_sub_district_code(starting_sub_district)
-#         for village_number in range(starting_village, ending_village + 1):
-#             village_code = get_village_code(village_number)
-#             india_lights_village = state_code + district_code + sub_district_code + village_code
-#
-#             print("Downloading village: " + india_lights_village + "\t Progress: " + str(village_number/ending_village * 100) + "%")
-#             file_name = directory + str(india_lights_village)
-#             url = "http://api.nightlights.io/months/" + start_year + "." + start_month + "-" + end_year + "." + end_month + "/villages/" + str(india_lights_village)
-#             # if village_number == 4:
-#             #     url = "http://api.nightlights.io/months/2008.1-2013.121/villages/1801000100000200"
-#
-#             try:
-#                 response = requests.get(url)
-#                 status_code = write_to_file(response)
-#                 if status_code == 200:
-#                     print("Download completed in: " + file_name)
-#                 else:
-#                     print("###### Error: " + response.json()['message'] + "\n\n\n\n\n")
-#             except requests.exceptions.RequestException as e:
-#                 print(e)
-#                 break
