@@ -13,3 +13,6 @@ as can be seen in the first 4 columns in [West Bengal's list of villages from th
 Data for other states can be found [here](http://censusindia.gov.in/Census_Data_2001/PLCN/plcn.html).
 
 Make sure to format the content like `village_dumps_by_state/wb_villages_dump.csv` if being applied for other states.
+
+## Sample data
+![sample screenshot](./screenshots/sample_data_image.png)
