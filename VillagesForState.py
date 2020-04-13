@@ -1,5 +1,6 @@
 import requests
 import os
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -158,7 +159,7 @@ class VillageDataObject:
 
     def __init__(self, dump_line):
         global current_state_name, current_district_name, current_sub_district_name
-        values = dump_line.split()
+        values = re.split(r"[,\s]\s*", dump_line) # Separating the fields based on ' ' or ','
         stateCode = values[0]
         districtCode = values[1]
         subDistrictCode = values[2]
@@ -216,7 +217,7 @@ with open(village_dump_file_path) as infile:
         write_line_in_file('StateName','StateCode','DistrictName','DistrictCode','SubDistrictName','SubDistrictCode','Constituency','VillageName','VillageCode','Year','Month','Count','Min','Max','Mean','Median')
 
     for line in infile:
-        line.strip('\n')
+        line = line.strip('\n')
         village_data = VillageDataObject(line)
 
         if not download_all_villages and village_data.village_code == starting_village_number:
