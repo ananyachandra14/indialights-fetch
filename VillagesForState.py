@@ -20,14 +20,14 @@ last_village            = "02812300"                # For tracking progress when
 start_year              = "2008"
 start_month             = "1"
 end_year                = "2013"
-end_month               = "121"
+end_month               = "12"
 
 # Specifying range of download
 download_all_villages   = False                     # If set to True, all villages' data are fetched.
                                                     # starting_village_number and ending_village_number properties are used only if set to False.
-starting_village_number = "00518500"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
+starting_village_number = "01500300"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
                                                     # Enter the village number from which you need to start fetching.
-ending_village_number   = "01500000"                # Bulk fetch will stop at this village number, including this.
+ending_village_number   = "02812300"                # Bulk fetch will stop at this village number, including this.
 
 # Misc parameters
 keep_empty_data_rows = False                      # If set to True, villages with empty data are kept in the data file.
