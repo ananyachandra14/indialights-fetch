@@ -25,9 +25,9 @@ end_month               = "12"
 # Specifying range of download
 download_all_villages   = False                     # If set to True, all villages' data are fetched.
                                                     # starting_village_number and ending_village_number properties are used only if set to False.
-starting_village_number = "00485800"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
+starting_village_number = "00501100"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
                                                     # Enter the village number from which you need to start fetching.
-ending_village_number   = "00485900"                # Bulk fetch will stop at this village number, including this.
+ending_village_number   = "01500000"                # Bulk fetch will stop at this village number, including this.
 
 
 def write_line_in_file(
@@ -176,7 +176,7 @@ class VillageDataObject:
 # Processing - Don't touch this
 
 last_village_int = int(last_village[:-2])
-start_village_int = int(starting_village_number[:-2])
+start_village_int = int(starting_village_number[:-2]) - 1
 end_village_int = int(ending_village_number[:-2])
 village_diff = end_village_int - start_village_int
 
