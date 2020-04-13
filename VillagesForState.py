@@ -6,12 +6,12 @@ from pathlib import Path
 folder = os.getcwd() + "/"
 
 # Parameters to be changed
-state                   = "west-bengal"             # This is just to create the folder inside the directory where all village data will be stored
-state_code              = "19"                      # Unused. uttar-pradesh - 9, bihar - 10, assam - 18, west-bengal - 19, orissa - 21, andhra-pradesh - 28
+state                   = "andhra-pradesh"             # This is just to create the folder inside the directory where all village data will be stored
+state_code              = "28"                      # Unused. uttar-pradesh - 9, bihar - 10, assam - 18, west-bengal - 19, orissa - 21, andhra-pradesh - 28
 directory               = folder + state + "/"
-output_file_path_name   = "wb_village_data"
-village_dump_file_path  = "village_dumps_by_state/assam_villages_dump.csv" # Change this to the village dump file of the corresponding state
-last_village            = "04078200"                # For tracking progress. Change this to the last village number when changing village_dump_file_path.
+output_file_path_name   = "andhra_village_data-13.04.2020-05.11.55"
+village_dump_file_path  = "village_dumps_by_state/andhra_pradesh_villages_dump.csv" # Change this to the village dump file of the corresponding state
+last_village            = "02812300"                # For tracking progress. Change this to the last village number when changing village_dump_file_path.
 
 # Starting and ending months for each village fetch
 start_year              = "2008"
@@ -21,9 +21,9 @@ end_month               = "12"
 
 download_all_villages   = False                     # If set to True, all villages' data are fetched and added to a new file with current timestamp.
                                                     # starting_village_number and ending_village_number properties are used only if set to False    .
-starting_village_number = "00000000"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
-ending_village_number   = "00001000"                # Bulk fetch will stop at this village number, including this.
-append_to_file          = False                     # This will append data to output_file_path_name file if set to True
+starting_village_number = "00108700"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
+ending_village_number   = "01200000"                # Bulk fetch will stop at this village number, including this.
+append_to_file          = True                     # This will append data to output_file_path_name file if set to True
 
 
 def write_line_in_file(
@@ -179,7 +179,7 @@ village_diff = end_village_int - start_village_int
 temp_download_flag = False
 
 now = datetime.now()
-dt_string = now.strftime("-%d:%m:%Y-%H.%M.%S")
+dt_string = now.strftime("-%d.%m.%Y-%H.%M.%S")
 output_file_path = directory + output_file_path_name + (dt_string + ".csv" if not append_to_file else ".csv")
 
 ###
