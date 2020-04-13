@@ -6,11 +6,14 @@ from pathlib import Path
 folder = os.getcwd() + "/"
 
 # Parameters to be changed
-state                   = "andhra-pradesh"             # This is just to create the folder inside the directory where all village data will be stored
+state                   = "andhra-pradesh"          # This is just to create the folder inside the directory where all village data will be stored
 state_code              = "28"                      # Unused. uttar-pradesh - 9, bihar - 10, assam - 18, west-bengal - 19, orissa - 21, andhra-pradesh - 28
 directory               = folder + state + "/"
-output_file_path_name   = "andhra_village_data-13.04.2020-05.11.55"
-village_dump_file_path  = "village_dumps_by_state/andhra_pradesh_villages_dump.csv" # Change this to the village dump file of the corresponding state
+output_file_path_name   = "andhra_village_data"     # New file is created with this name. Timestamp gets suffixed to this to avoid rewriting mistakenly.
+                                                    # If append_to_file is set to True, append_to_file_name is used.
+append_to_file          = True                      # This will append data to append_to_file_name file if set to True, and a new file will be not be created.
+append_to_file_name     = "andhra_village_data-13.04.2020-05.11.55"
+village_dump_file_path  = "village_dumps_by_state/andhra_pradesh_villages_dump.csv" # Change this to the village dump file of the corresponding state you want to use.
 last_village            = "02812300"                # For tracking progress. Change this to the last village number when changing village_dump_file_path.
 
 # Starting and ending months for each village fetch
@@ -19,11 +22,12 @@ start_month             = "1"
 end_year                = "2013"
 end_month               = "12"
 
-download_all_villages   = False                     # If set to True, all villages' data are fetched and added to a new file with current timestamp.
-                                                    # starting_village_number and ending_village_number properties are used only if set to False    .
-starting_village_number = "00108700"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
-ending_village_number   = "01200000"                # Bulk fetch will stop at this village number, including this.
-append_to_file          = True                     # This will append data to output_file_path_name file if set to True
+# Specifying range of download
+download_all_villages   = False                     # If set to True, all villages' data are fetched.
+                                                    # starting_village_number and ending_village_number properties are used only if set to False.
+starting_village_number = "00485800"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
+                                                    # Enter the village number from which you need to start fetching.
+ending_village_number   = "00485900"                # Bulk fetch will stop at this village number, including this.
 
 
 def write_line_in_file(
@@ -66,7 +70,7 @@ def write_line_in_file(
 
 def parse_response(response, village_object):
     global current_state_name, current_district_name, current_sub_district_name
-    if response.status_code == 200:
+    if response.status_code and response.status_code == 200:
         json = response.json()
         if len(json) == 0:
             write_line_in_file(
@@ -151,7 +155,7 @@ class VillageDataObject:
         fieldName = ""
         for i in range(4, len(values)):
             fieldName += values[i] + " "
-        fieldName.strip()
+        fieldName = fieldName.strip()
 
         if districtCode == "00" and subDistrictCode == "0000" and villageCode == "00000000":
             current_state_name = fieldName
@@ -180,7 +184,7 @@ temp_download_flag = False
 
 now = datetime.now()
 dt_string = now.strftime("-%d.%m.%Y-%H.%M.%S")
-output_file_path = directory + output_file_path_name + (dt_string + ".csv" if not append_to_file else ".csv")
+output_file_path = directory + (append_to_file_name if append_to_file else output_file_path_name) + (dt_string + ".csv" if not append_to_file else ".csv")
 
 ###
 
@@ -203,7 +207,7 @@ with open(village_dump_file_path) as infile:
         if not download_all_villages and village_data.village_code == starting_village_number:
             temp_download_flag = True
 
-        if download_all_villages or temp_download_flag:
+        if (download_all_villages or temp_download_flag) and village_data.village_name != "":
             village_response = download_data_for_village(village_data.india_lights_village_code, village_data.village_code)
             parse_response(village_response, village_data)
 
