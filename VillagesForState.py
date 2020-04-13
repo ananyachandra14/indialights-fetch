@@ -14,13 +14,13 @@ output_file_path_name   = "andhra_village_data"     # New file is created with t
 append_to_file          = True                      # This will append data to append_to_file_name file if set to True, and a new file will be not be created.
 append_to_file_name     = "andhra_village_data-13.04.2020-05.11.55"
 village_dump_file_path  = "village_dumps_by_state/andhra_pradesh_villages_dump.csv" # Change this to the village dump file of the corresponding state you want to use.
-last_village            = "02812300"                # For tracking progress. Change this to the last village number when changing village_dump_file_path.
+last_village            = "02812300"                # For tracking progress when download_all_villages is True. Change this to the last village number present in the dump file when changing village_dump_file_path.
 
 # Starting and ending months for each village fetch
 start_year              = "2008"
 start_month             = "1"
 end_year                = "2013"
-end_month               = "12"
+end_month               = "121"
 
 # Specifying range of download
 download_all_villages   = False                     # If set to True, all villages' data are fetched.
@@ -28,6 +28,9 @@ download_all_villages   = False                     # If set to True, all villag
 starting_village_number = "00518500"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
                                                     # Enter the village number from which you need to start fetching.
 ending_village_number   = "01500000"                # Bulk fetch will stop at this village number, including this.
+
+# Misc parameters
+keep_empty_data_rows = False                      # If set to True, villages with empty data are kept in the data file.
 
 
 def write_line_in_file(
@@ -73,25 +76,28 @@ def parse_response(response, village_object):
     if response.status_code and response.status_code == 200:
         json = response.json()
         if len(json) == 0:
-            write_line_in_file(
-                current_state_name,
-                village_object.state_code,
-                current_district_name,
-                village_object.district_code,
-                current_sub_district_name,
-                village_object.sub_district_code,
-                village_object.constituency,
-                village_object.village_name,
-                village_object.village_code,
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-            )
-            print("### No data for village " + village_object.village_code)
+            if keep_empty_data_rows:
+                write_line_in_file(
+                    current_state_name,
+                    village_object.state_code,
+                    current_district_name,
+                    village_object.district_code,
+                    current_sub_district_name,
+                    village_object.sub_district_code,
+                    village_object.constituency,
+                    village_object.village_name,
+                    village_object.village_code,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                )
+            no_data_text = "### No data for village " + village_object.village_code + "\n"
+            print(no_data_text)
+            error_file.write(no_data_text)
         else:
             for month_data in json:
                 write_line_in_file(
@@ -114,7 +120,9 @@ def parse_response(response, village_object):
                 )
             print("Download complete")
     else:
-        print("###### Error: " + response.json()['message'] + "\n\n\n\n\n")
+        error_text = "###### Error for village: " + village_object.village_code + "\n" + response.json()['message'] + "\n\n\n\n\n"
+        print(error_text)
+        error_file.write(error_text)
 
 
 def get_progress(village_number):
@@ -187,7 +195,10 @@ temp_download_flag = False
 
 now = datetime.now()
 dt_string = now.strftime("-%d.%m.%Y-%H.%M.%S")
-output_file_path = directory + (append_to_file_name if append_to_file else output_file_path_name) + (dt_string + ".csv" if not append_to_file else ".csv")
+output_file_path = directory + (append_to_file_name if append_to_file else output_file_path_name) + (dt_string if not append_to_file else "")
+error_file_path = output_file_path + "-error.csv"
+output_file_path += ".csv"
+
 
 ###
 
@@ -195,6 +206,7 @@ output_file_path = directory + (append_to_file_name if append_to_file else outpu
 # Downloading begins here
 Path(directory).mkdir(parents=True, exist_ok=True)
 output_file = open(output_file_path, 'a' if append_to_file else 'w')
+error_file = open(error_file_path, 'a' if append_to_file else 'w')
 
 current_state_name = ""
 current_district_name = ""
@@ -220,6 +232,7 @@ with open(village_dump_file_path) as infile:
 
 
 output_file.close()
+error_file.close()
 
 
 print("\n\n############### DOWNLOAD COMPLETE ##############\n\n")
