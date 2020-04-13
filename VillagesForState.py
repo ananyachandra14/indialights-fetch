@@ -25,7 +25,7 @@ end_month               = "12"
 # Specifying range of download
 download_all_villages   = False                     # If set to True, all villages' data are fetched.
                                                     # starting_village_number and ending_village_number properties are used only if set to False.
-starting_village_number = "00501100"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
+starting_village_number = "00518500"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
                                                     # Enter the village number from which you need to start fetching.
 ending_village_number   = "01500000"                # Bulk fetch will stop at this village number, including this.
 
@@ -119,11 +119,14 @@ def parse_response(response, village_object):
 
 def get_progress(village_number):
     current = int(village_number[:-2])
+    perc_complete = 0
     if download_all_villages:
-        return current/last_village_int * 100
+        perc_complete = current/last_village_int * 100
     else:
         progress = current - start_village_int
-        return progress / village_diff * 100
+        perc_complete = progress / village_diff * 100
+
+    return round(perc_complete, 2)
 
 
 def download_data_for_village(india_lights_village_code, village_number):
