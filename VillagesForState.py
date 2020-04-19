@@ -7,15 +7,15 @@ from pathlib import Path
 folder = os.getcwd() + "/"
 
 # Parameters to be changed
-state                   = "andhra-pradesh"          # This is just to create the folder inside the directory where all village data will be stored
-state_code              = "28"                      # Unused. uttar-pradesh - 9, bihar - 10, assam - 18, west-bengal - 19, orissa - 21, andhra-pradesh - 28
+state                   = "orissa"          # This is just to create the folder inside the directory where all village data will be stored
+state_code              = "21"                      # Unused. uttar-pradesh - 9, bihar - 10, assam - 18, west-bengal - 19, orissa - 21, andhra-pradesh - 28
 directory               = folder + state + "/"
-output_file_path_name   = "andhra_village_data"     # New file is created with this name. Timestamp gets suffixed to this to avoid rewriting mistakenly.
+output_file_path_name   = "orissa_village_data"     # New file is created with this name. Timestamp gets suffixed to this to avoid rewriting mistakenly.
                                                     # If append_to_file is set to True, append_to_file_name is used.
-append_to_file          = True                      # This will append data to append_to_file_name file if set to True, and a new file will be not be created.
+append_to_file          = False                      # This will append data to append_to_file_name file if set to True, and a new file will be not be created.
 append_to_file_name     = "andhra_village_data-13.04.2020-05.11.55"
-village_dump_file_path  = "village_dumps_by_state/andhra_pradesh_villages_dump.csv" # Change this to the village dump file of the corresponding state you want to use.
-last_village            = "02812300"                # For tracking progress when download_all_villages is True. Change this to the last village number present in the dump file when changing village_dump_file_path.
+village_dump_file_path  = "village_dumps_by_state/orissa_villages_dump.csv" # Change this to the village dump file of the corresponding state you want to use.
+last_village            = "05134900"                # For tracking progress when download_all_villages is True. Change this to the last village number present in the dump file when changing village_dump_file_path.
 
 # Starting and ending months for each village fetch
 start_year              = "2008"
@@ -26,15 +26,16 @@ end_month               = "12"
 # Specifying range of download
 download_all_villages   = False                     # If set to True, all villages' data are fetched.
                                                     # starting_village_number and ending_village_number properties are used only if set to False.
-starting_village_number = "01500300"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
+starting_village_number = "00000000"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
                                                     # Enter the village number from which you need to start fetching.
-ending_village_number   = "02812300"                # Bulk fetch will stop at this village number, including this.
+ending_village_number   = "00000500"                # Bulk fetch will stop at this village number, including this.
 
 # Misc parameters
-keep_empty_data_rows = False                      # If set to True, villages with empty data are kept in the data file.
+keep_empty_data_rows = True                      # If set to True, villages with empty data are kept in the data file.
 
 
 def write_line_in_file(
+        il_village_id,
         state_name,
         state,
         district_name,
@@ -53,6 +54,7 @@ def write_line_in_file(
         median
 ):
     output_file.write(
+        il_village_id + "," +
         state_name + "," +
         state + "," +
         district_name + "," +
@@ -79,6 +81,7 @@ def parse_response(response, village_object):
         if len(json) == 0:
             if keep_empty_data_rows:
                 write_line_in_file(
+                    village_object.india_lights_village_code,
                     current_state_name,
                     village_object.state_code,
                     current_district_name,
@@ -102,6 +105,7 @@ def parse_response(response, village_object):
         else:
             for month_data in json:
                 write_line_in_file(
+                    village_object.india_lights_village_code,
                     current_state_name,
                     village_object.state_code,
                     current_district_name,
@@ -214,7 +218,7 @@ current_district_name = ""
 current_sub_district_name = ""
 with open(village_dump_file_path) as infile:
     if not append_to_file:
-        write_line_in_file('StateName','StateCode','DistrictName','DistrictCode','SubDistrictName','SubDistrictCode','Constituency','VillageName','VillageCode','Year','Month','Count','Min','Max','Mean','Median')
+        write_line_in_file('ILVillageId','StateName','StateCode','DistrictName','DistrictCode','SubDistrictName','SubDistrictCode','Constituency','VillageName','VillageCode','Year','Month','Count','Min','Max','Mean','Median')
 
     for line in infile:
         line = line.strip('\n')
