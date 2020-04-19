@@ -3,19 +3,30 @@ import os
 import re
 from datetime import datetime
 from pathlib import Path
+from utils.get_meta_data_for_state import get_meta_data_for_state
+from utils.State import State
 
 folder = os.getcwd() + "/"
 
 # Parameters to be changed
-state                   = "orissa"          # This is just to create the folder inside the directory where all village data will be stored
-state_code              = "21"                      # Unused. uttar-pradesh - 9, bihar - 10, assam - 18, west-bengal - 19, orissa - 21, andhra-pradesh - 28
-directory               = folder + state + "/"
-output_file_path_name   = "orissa_village_data"     # New file is created with this name. Timestamp gets suffixed to this to avoid rewriting mistakenly.
-                                                    # If append_to_file is set to True, append_to_file_name is used.
-append_to_file          = False                      # This will append data to append_to_file_name file if set to True, and a new file will be not be created.
-append_to_file_name     = "andhra_village_data-13.04.2020-05.11.55"
-village_dump_file_path  = "village_dumps_by_state/orissa_villages_dump.csv" # Change this to the village dump file of the corresponding state you want to use.
-last_village            = "05134900"                # For tracking progress when download_all_villages is True. Change this to the last village number present in the dump file when changing village_dump_file_path.
+state = State.ANDHRA_PRADESH    # Change this to corresponding state for which data is to be fetched eg. State.ORISSA for fetching data for villages in Orissa.
+
+
+# Specifying range of download
+download_all_villages   = False                     # If set to True, all villages' data are fetched.
+                                                    # starting_village_number and ending_village_number parameters are used only if this is set to False.
+starting_village_number = "00000000"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
+                                                    # Enter the village number from which you need to start fetching.
+                                                    # Not used when download_all_villages is set to False.
+ending_village_number   = "00000200"                # Bulk fetch will stop at this village number, including this.
+                                                    # Not used when download_all_villages is set to False.
+
+# Misc parameters
+append_to_file       = False                        # This will append data to append_to_file_name file if set to True, and a new file will be not be created.
+append_to_file_name  = "andhra_village_data-13.04.2020-05.11.55"
+                                                    # Change this to the file name to which data is to be appended when append_to_file is set to True.
+                                                    # Not used when append_to_file is False.
+keep_empty_data_rows = True                         # If set to True, villages with empty data are kept in the data file.
 
 # Starting and ending months for each village fetch
 start_year              = "2008"
@@ -23,17 +34,11 @@ start_month             = "1"
 end_year                = "2013"
 end_month               = "12"
 
-# Specifying range of download
-download_all_villages   = False                     # If set to True, all villages' data are fetched.
-                                                    # starting_village_number and ending_village_number properties are used only if set to False.
-starting_village_number = "00000000"                # Check the sample village dumps inside village_dumps_by_state. The 4th column denotes this.
-                                                    # Enter the village number from which you need to start fetching.
-ending_village_number   = "00000500"                # Bulk fetch will stop at this village number, including this.
 
-# Misc parameters
-keep_empty_data_rows = True                      # If set to True, villages with empty data are kept in the data file.
+###
 
 
+# Methods
 def write_line_in_file(
         il_village_id,
         state_name,
@@ -132,7 +137,6 @@ def parse_response(response, village_object):
 
 def get_progress(village_number):
     current = int(village_number[:-2])
-    perc_complete = 0
     if download_all_villages:
         perc_complete = current/last_village_int * 100
     else:
@@ -190,9 +194,16 @@ class VillageDataObject:
 
 
 # Processing - Don't touch this
+state_meta              = get_meta_data_for_state(state)
+state_folder            = state_meta.output_folder_name
+state_code              = state_meta.state_code
+directory               = folder + state_folder + "/"
+output_file_path_name   = state_meta.output_file_path_name # If append_to_file is set to True, append_to_file_name is used.
+village_dump_file_path  = state_meta.village_dump_file_path
+last_village            = state_meta.last_village
 
 last_village_int = int(last_village[:-2])
-start_village_int = int(starting_village_number[:-2]) - 1
+start_village_int = int(starting_village_number[:-2])
 end_village_int = int(ending_village_number[:-2])
 village_diff = end_village_int - start_village_int
 
@@ -240,4 +251,4 @@ output_file.close()
 error_file.close()
 
 
-print("\n\n############### DOWNLOAD COMPLETE ##############\n\n")
+print("\n\n############### DOWNLOAD COMPLETE ##############\n\nData stored in: " + output_file_path + "\n\n")
