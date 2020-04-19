@@ -6,10 +6,10 @@ from pathlib import Path
 from utils.get_meta_data_for_state import get_meta_data_for_state
 from utils.State import State
 
-folder = os.getcwd() + "/"
+folder = os.getcwd() + "/data/"
 
 # Parameters to be changed
-state = State.ANDHRA_PRADESH    # Change this to corresponding state for which data is to be fetched eg. State.ORISSA for fetching data for villages in Orissa.
+state = State.UTTAR_PRADESH    # Change this to corresponding state for which data is to be fetched eg. State.ORISSA for fetching data for villages in Orissa.
 
 
 # Specifying range of download
